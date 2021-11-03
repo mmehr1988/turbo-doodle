@@ -1,20 +1,68 @@
 let transactions = [];
 let myChart;
 
-fetch('/api/transaction')
-  .then((response) => {
-    return response.json();
-  })
-  .then((data) => {
-    // save db data on global variable
-    transactions = data;
+/////////////////////////////////////////////////////////////
+// INPUT VARIABLES
+/////////////////////////////////////////////////////////////
 
-    populateTotal();
-    populateTable();
-    populateChart();
-  });
+const nameEl = document.querySelector('#t-name');
+const amountEl = document.querySelector('#t-amount');
+const errorEl = document.querySelector('.form .error');
 
-function populateTotal() {
+///////////////////////////////////////////////////////
+// API REQUESTS: GET
+///////////////////////////////////////////////////////
+
+const getAllTransactions = () => {
+  fetch('/api/transaction')
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      handlePopulate(data);
+    });
+};
+
+getAllTransactions();
+
+//////////////////////////////////////////////////////////////
+// BEFORE POPULATE - VERIFY ITEMS IN INDEXDB
+//////////////////////////////////////////////////////////////
+
+const handlePopulate = (data) => {
+  if (verifyIndexedDB()) {
+    useIndexedDB('BudgetDB', 'BudgetStore', 'get').then((results) => {
+      // FOR EACH RESULT IN INDEXDB, POST TO MONGODB
+      results.forEach((result) => {
+        sendToDatabase(result);
+      });
+
+      // ONCE POSTED TO MONGODB, CLEAR THE INDEXDB
+      clearStore('BudgetDB', 'BudgetStore');
+
+      // THE GLOBAL TRANSACTIONS ARRAY IS NOW EQUAL TO THE DATA FROM THE GET REQUEST
+      transactions = data;
+      //POPULATE THE TOTAL + TABLE + CHART
+      populate();
+    });
+  }
+};
+
+//////////////////////////////////////////////////////////////
+// POPULATE
+//////////////////////////////////////////////////////////////
+
+const populate = () => {
+  populateTotal();
+  populateTable();
+  populateChart();
+};
+
+//////////////////////////////////////////////////////////////
+// POPULATE: CHARTS + TABLE + TOTALS
+//////////////////////////////////////////////////////////////
+
+const populateTotal = () => {
   // reduce transaction amounts to a single total value
   let total = transactions.reduce((total, t) => {
     return total + parseInt(t.value);
@@ -22,9 +70,9 @@ function populateTotal() {
 
   let totalEl = document.querySelector('#total');
   totalEl.textContent = total;
-}
+};
 
-function populateTable() {
+const populateTable = () => {
   let tbody = document.querySelector('#tbody');
   tbody.innerHTML = '';
 
@@ -38,9 +86,9 @@ function populateTable() {
 
     tbody.appendChild(tr);
   });
-}
+};
 
-function populateChart() {
+const populateChart = () => {
   // copy array and reverse it
   let reversed = transactions.slice().reverse();
   let sum = 0;
@@ -78,14 +126,13 @@ function populateChart() {
       ],
     },
   });
-}
+};
 
-function sendTransaction(isAdding) {
-  let nameEl = document.querySelector('#t-name');
-  let amountEl = document.querySelector('#t-amount');
-  let errorEl = document.querySelector('.form .error');
-
-  // validate form
+//////////////////////////////////////////////////////////////
+// SEND TRANSACTIONS
+//////////////////////////////////////////////////////////////
+const sendTransaction = (isAdding) => {
+  // FORM INPUT VALIDATION
   if (nameEl.value === '' || amountEl.value === '') {
     errorEl.textContent = 'Missing Information';
     return;
@@ -93,30 +140,36 @@ function sendTransaction(isAdding) {
     errorEl.textContent = '';
   }
 
-  // create record
+  // TRANSACTION OBJECT
   let transaction = {
     name: nameEl.value,
-    value: amountEl.value,
+    value: parseFloat(amountEl.value).toFixed(2),
     date: new Date().toISOString(),
   };
 
-  // if subtracting funds, convert amount to negative number
+  // IF SUBSTRACT FUNDS, CONVERT TO NEGATIVE
   if (!isAdding) {
     transaction.value *= -1;
   }
 
-  // add to beginning of current array of data
+  // USING UNSHIFT TO ADD THE DATA TO THE BEGINNING OF DATA
   transactions.unshift(transaction);
 
-  // re-run logic to populate ui with new record
-  populateChart();
-  populateTable();
-  populateTotal();
+  // UPDATE POPULATE DATA
+  populate();
 
-  // also send to server
+  // SEND DATA TO BE POSTED
+  sendToDatabase(transaction);
+};
+
+//////////////////////////////////////////////////////////////
+// SEND TO INDEXDB DATABASE
+//////////////////////////////////////////////////////////////
+
+const sendToDatabase = (data) => {
   fetch('/api/transaction', {
     method: 'POST',
-    body: JSON.stringify(transaction),
+    body: JSON.stringify(data),
     headers: {
       Accept: 'application/json, text/plain, */*',
       'Content-Type': 'application/json',
@@ -126,28 +179,145 @@ function sendTransaction(isAdding) {
       return response.json();
     })
     .then((data) => {
+      // IF ERROR WITH POSTING DATA
       if (data.errors) {
         errorEl.textContent = 'Missing Information';
       } else {
-        // clear form
-        nameEl.value = '';
-        amountEl.value = '';
+        clearFormInputs();
       }
     })
     .catch((err) => {
-      // fetch failed, so save in indexed db
-      saveRecord(transaction);
-
-      // clear form
-      nameEl.value = '';
-      amountEl.value = '';
+      // IF THERE WAS AN ERROR, IT MEANS THE CONNECTION IS LOST
+      // THEREFORE, USE INDEXDB AS BACKUP
+      useIndexedDB('BudgetDB', 'BudgetStore', 'put', data);
+      clearFormInputs();
     });
-}
+};
 
-document.querySelector('#add-btn').onclick = function () {
+//////////////////////////////////////////////////////////////
+// CLEAR FORM INPUTS
+//////////////////////////////////////////////////////////////
+
+const clearFormInputs = () => {
+  nameEl.value = '';
+  amountEl.value = '';
+};
+
+//////////////////////////////////////////////////////////////
+// EVENT LISTENERS
+//////////////////////////////////////////////////////////////
+
+document.querySelector('#add-btn').onclick = () => {
   sendTransaction(true);
 };
 
-document.querySelector('#sub-btn').onclick = function () {
+document.querySelector('#sub-btn').onclick = () => {
   sendTransaction(false);
+};
+
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// INDEXDB
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
+// FOR VERIFYING IF INDEXDB IS POSSIBLE
+// The latest versions of Firefox, Chrome, Opera, Safar, iOS Safari, and Android all fully support IndexedDB, and Internet Explorer and Blackberry feature partial support.
+const verifyIndexedDB = () => {
+  if (!window.indexedDB) {
+    alert("Your browser doesn't support IndexedDB.");
+    return false;
+  } else {
+    return true;
+  }
+};
+
+// IF INDEXDB IS ACTIVATED
+const useIndexedDB = (dbName, strName, method, object) => {
+  return new Promise((resolve, reject) => {
+    // OPEN DATABASE
+    const request = window.indexedDB.open(dbName, 1);
+    let db, tx, store;
+
+    // CREATE STORE
+    request.onupgradeneeded = function (e) {
+      const db = request.result;
+      db.createObjectStore(strName, { keyPath: 'key', autoIncrement: true });
+    };
+
+    // ON ERROR IF ANY ISSUES CREATING
+    request.onerror = function (e) {
+      //Log an error if needed.
+      console.log('There was an error');
+      alert('Something went wrong with IndexedDB.');
+    };
+
+    //////////////////////////////////////////////////////
+    // INDEXDB: ON SUCCESS
+    //////////////////////////////////////////////////////
+    request.onsuccess = (e) => {
+      // ESTABLISH THE DATABASE vs. REQUEST
+      db = request.result;
+      // CREATE TRANSACTION IN DB = BudgetStore
+      tx = db.transaction(strName, 'readwrite');
+      store = tx.objectStore(strName);
+
+      // HANDLING INDEXDB ERRORS
+      db.onerror = function (e) {
+        console.log('error');
+        alert('Something went wrong trying to access the correct store.');
+      };
+
+      // PUT = STORE
+      if (method === 'put') {
+        store.put(object);
+
+        console.log('successfylly added to IndexedDB');
+      } else if (method === 'get') {
+        // GET ALL
+        const all = store.getAll();
+
+        all.onsuccess = function () {
+          //Resolve the promise.
+          resolve(all.result);
+        };
+        // DELETE
+      } else if (method === 'delete') {
+        store.delete(object._id);
+      }
+      tx.oncomplete = function () {
+        // ON COMPLETE: CLOSE THE DATABASE
+        db.close();
+      };
+    };
+  });
+};
+
+//////////////////////////////////////////////////////
+// INDEXDB: TO CLEAR TRANSACTIONS IN DATABASE
+//////////////////////////////////////////////////////
+
+const clearStore = (dbName, strName) => {
+  const request = window.indexedDB.open(dbName, 1);
+
+  // IF REQUEST IS SUCCESSFUL, CLEAR THE DATABASE AS THE DATA WILL HAVE REACHED THE REMOTE MONGODB
+  request.onsuccess = () => {
+    db = request.result;
+
+    let deleteTransaction = db.transaction(strName, 'readwrite');
+
+    deleteTransaction.onerror = () => {
+      console.log('Something went wrong while deleting transaction.');
+    };
+
+    let objectStore = deleteTransaction.objectStore(strName);
+
+    let objectStoreRequest = objectStore.clear();
+
+    objectStoreRequest.onsuccess = () => {
+      console.log('IndexDB data successfully deleted');
+    };
+  };
 };
