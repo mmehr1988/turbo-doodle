@@ -6,22 +6,6 @@
 
 <hr/>
 
-## 1. Description
-
-Turbo Doodle is a full-stack budget tracker that was developed as a progressive web app (PWA).
-
-Per MDN, a PWA app is when the app:
-
-> "meets certain requirements, or implements a set of given features: works offline, is installable, is easy to synchronize, can send push notifications."
-
-If you're interested in the full article, click on the following link - [What is a Progressive Web App?](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Introduction)
-
-Given the above definition, the main feature of this app is to provide the user the ability to add expenses and deposits if their internet connection is lost. See section [Offline Functionality](#offline-functionality) for more information on how this is done.
-
-To view the final app deployed on Heroku, please click on the following [link](https://secret-sierra-86296.herokuapp.com/).
-
-<hr/>
-
 ## Table of Contents:
 
 1. [Description](#1-description)
@@ -42,6 +26,22 @@ To view the final app deployed on Heroku, please click on the following [link](h
 6. [Video](#6-video)
 7. [License](#7-license)
 8. [Questions](#8-questions)
+
+<hr/>
+
+## 1. Description
+
+Turbo Doodle is a full-stack budget tracker that was developed as a progressive web app (PWA).
+
+Per MDN, a PWA app is when the app:
+
+> "meets certain requirements, or implements a set of given features: works offline, is installable, is easy to synchronize, can send push notifications."
+
+If you're interested in the full article, click on the following link - [What is a Progressive Web App?](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Introduction)
+
+Given the above definition, the main feature of this app is to provide the user the ability to add expenses and deposits if their internet connection is lost. See section [Offline Functionality](#offline-functionality) for more information on how this is done.
+
+To view the final app deployed on Heroku, please click on the following [link](https://secret-sierra-86296.herokuapp.com/).
 
 <hr/>
 
