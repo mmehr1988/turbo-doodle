@@ -83,7 +83,7 @@ The below list provided by MDN summarizes the basic pattern thats encouraged ino
 
 1.  [MongoDB Community Server Installation Page](https://www.mongodb.com/try/download/community)
 
-2.  After install, check with the command line to ensure setup is correct. If running the below commands does not output any errors, then you've correctly installed mongoDB.
+2.  After install, check with the command line to ensure setup is correct. If no errors are shown after running the below commands, then you've correctly installed MongoDB.
 
         ```bash
         mongo --version
