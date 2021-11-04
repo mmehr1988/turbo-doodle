@@ -6,7 +6,7 @@
 
 <hr/>
 
-## Description
+## 1. Description
 
 Turbo Doodle is a full-stack budget tracker that was developed as a progressive web app (PWA).
 
@@ -24,18 +24,54 @@ To view the final app deployed on Heroku, please click on the following [link](h
 
 ## Table of Contents:
 
-1. [Description](#description)
-1. [Technologies](#technologies)
-1. [Offline Functionality](#offline-functionality)
-1. [Installation](#installation)
-1. [Usage](#usage)
-1. [Video](#video)
-1. [License](#license)
-1. [Questions](#questions)
+1. [Description](#1-description)
+2. [Technologies](#2-technologies)
+3. [Offline Functionality](#3-offline-functionality)
+
+   3.1 [IndexedDB Basic Pattern](#31-indexeddb-basic-pattern)
+
+4. [Installation](#4-installation)
+
+   4.1 [Node.js Installation](#41-nodejs-installation)
+
+   4.2 [MongoDB Installation](#42-mongodb-installation)
+
+   4.3 [MongoDB Atlas Setup](#43-mongodb-atlas-setup)
+
+5. [Usage](#5-usage)
+6. [Video](#6-video)
+7. [License](#7-license)
+8. [Questions](#8-questions)
 
 <hr/>
 
-## Offline Functionality
+## 2. Technologies
+
+1. [Node.js](https://www.npmjs.com/package/inquirer) Packages
+
+   a. [compression](https://www.npmjs.com/package/bcrypt)
+
+   b. [dotenv](https://www.npmjs.com/package/dotenv)
+
+   c. [express](https://www.npmjs.com/package/express)
+
+   d. [lite-server](https://www.npmjs.com/package/lite-server)
+
+   e. [mongodb](https://www.npmjs.com/package/mongodb)
+
+   f. [mongoose](https://www.npmjs.com/package/mongoose)
+
+   g. [morgan](https://www.npmjs.com/package/morgan)
+
+   h. [nodemon](https://www.npmjs.com/package/nodemon)
+
+2. Deployment
+
+   a. [Heroku](https://devcenter.heroku.com/)
+
+<hr/>
+
+## 3. Offline Functionality
 
 The offline functionality is implemented through the use of IndexedDB.
 
@@ -49,7 +85,7 @@ Link to: [Can I Use: IndexedDB](https://caniuse.com/?search=indexed)
 
 ![alt text](./public/assets/images/caniuse_indexedDB.png)
 
-### IndexedDB Basic Pattern
+### 3.1 IndexedDB Basic Pattern
 
 The below list provided by MDN summarizes the basic pattern thats encouraged inorder to successfully implement the use of IndexedDB.
 
@@ -61,11 +97,11 @@ The below list provided by MDN summarizes the basic pattern thats encouraged ino
 
 <hr/>
 
-## Installation
+## 4. Installation
 
 - Before cloning the repository, please ensure you have node.js installed as this app requires the installing of npm packages. You will also need to ensure you have both MongoDB installed on your computer and MongoDB Atlas setup.
 
-### Node.js Installation
+### 4.1 Node.js Installation
 
 1.  [Node.js Download Page](https://nodejs.org/en/download/)
 
@@ -79,7 +115,7 @@ The below list provided by MDN summarizes the basic pattern thats encouraged ino
         node -v
         ```
 
-### MongoDB Installation
+### 4.2 MongoDB Installation
 
 1.  [MongoDB Community Server Installation Page](https://www.mongodb.com/try/download/community)
 
@@ -93,7 +129,7 @@ The below list provided by MDN summarizes the basic pattern thats encouraged ino
         mongod --version
         ```
 
-### MongoDB Atlas Setup
+### 4.3 MongoDB Atlas Setup
 
 1.  [MongoDB Atlas Getting Started Page](https://docs.atlas.mongodb.com/getting-started/)
 
@@ -151,7 +187,7 @@ The below list provided by MDN summarizes the basic pattern thats encouraged ino
 
 <hr/>
 
-## Usage
+## 5. Usage
 
 - Once you've completed the installation section guidelines, all that is left is to install the npm packages and then start the app.
 
@@ -179,18 +215,18 @@ The below list provided by MDN summarizes the basic pattern thats encouraged ino
 
 <hr/>
 
-## Video
+## 6. Video
 
 ![alt text](./public/assets/gif/turbo-doodle.gif)
 
 <hr/>
 
-## License
+## 7. License
 
 <a href="https://choosealicense.com/licenses/mit" target="_blank">MIT License</a>
 
 <hr/>
 
-## Questions
+## 8. Questions
 
 Github Portfolio Link: [Mehdi Mehrabani](https://github.com/mmehr1988)<br>
