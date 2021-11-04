@@ -71,9 +71,9 @@ The below list provided by MDN summarizes the basic pattern thats encouraged ino
 
 2.  After install, check with command line to ensure setup is correct.
 
-        a. Open your terminal
+    a. Open your terminal
 
-        b. Type the below command. If you see a version it means you have installed node.js correctly.
+    b. Type the below command. If you see a version it means you have installed node.js correctly.
 
         ```bash
         node -v
