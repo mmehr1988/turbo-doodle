@@ -63,7 +63,7 @@ The below list provided by MDN summarizes the basic pattern thats encouraged ino
 
 ## Installation
 
-- Before cloning the repository, please ensure you have node.js installed as this app requires the installing of npm packages. You will also need to ensure you have both MongoDB installed on your computer and MongoDB Atlas as the database will the remote functionality to store the data.
+- Before cloning the repository, please ensure you have node.js installed as this app requires the installing of npm packages. You will also need to ensure you have both MongoDB installed on your computer and MongoDB Atlas setup.
 
 ### Node.js Installation
 
